@@ -25,7 +25,6 @@ def PRGA(S):
     :param S:
     :type S: list
     """
-    print(S)
     i = 0
     j = 0
     while True:
@@ -45,12 +44,14 @@ def RC4(key):
 
 
 def main():
-    key = "Key"
-    plaintext = "Plaintext"
+    # ciphertext should be 45A01F645FC35B383552544B9BF5
+    key = "Secret"
+    plaintext = "Attack at dawn"
 
     keystream = RC4(bytearray(key, 'utf-8'))
     for c in plaintext:
         print('{:02X}'.format(ord(c) ^ next(keystream)), end='')
+    print()
 
 
 if __name__ == "__main__":
