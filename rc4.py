@@ -1,19 +1,57 @@
-def key_scheduler(keylength=128):
+from helper import swap
+
+
+def KSA(key):
     """
     Key-scheduling algorithm (KSA)
 
-    :param keylength: the number of bytes in the key and can be in the range
-        1 <= keylength <= 256
-    :type keylength: int
+    :param key:
+    :type key: string
     """
-    if not (keylength >= 1 and keylength <= 256):
-        return
+    keylength = len(key)
 
-    S = [i for i in range(keylength)]
+    S = list(range(256))
+    j = 0
+    for i in range(256):
+        j = (j + S[i] + key[i % keylength]) % 256
+        swap(S, i, j)
+    return S
 
 
-class KeyLengthInvalid(Exception):
+def PRGA(S):
+    """
+    Pseudo-random generation algorithm (PRGA)
 
-    def __init__(self, message=None):
-        if not message:
-            self.message = "keylength must between 1 and 256"
+    :param S:
+    :type S: list
+    """
+    print(S)
+    i = 0
+    j = 0
+    while True:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        swap(S, i, j)
+        K = S[(S[i] + S[j]) % 256]
+        yield K
+
+
+def RC4(key):
+    """
+    Rivest Cipher 4
+    """
+    S = KSA(key)
+    return PRGA(S)
+
+
+def main():
+    key = "Key"
+    plaintext = "Plaintext"
+
+    keystream = RC4(bytearray(key, 'utf-8'))
+    for c in plaintext:
+        print('{:02X}'.format(ord(c) ^ next(keystream)), end='')
+
+
+if __name__ == "__main__":
+    main()
